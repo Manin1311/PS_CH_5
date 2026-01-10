@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binomial & Poisson Distribution Quiz - Chapter 5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            margin-top: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .quiz-content {
+            padding: 30px;
+        }
+
+        .question-card {
+            margin-bottom: 30px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            background: #fed6e3;
+            color: #333;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: #a8edea;
+            background: #f0fffe;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #a8edea;
+            background: #e6fffd;
+        }
+
+        .option.correct {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+            animation: correctPulse 0.5s ease;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+            animation: incorrectShake 0.5s ease;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .option-label {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #a8edea;
+            color: #333;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .option.correct .option-label {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .option.incorrect .option-label {
+            background: #f44336;
+            color: white;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(168, 237, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #d0d0d0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px 30px;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .results h2 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 30px auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            position: relative;
+        }
+
+        .score-circle.excellent {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .score-circle.good {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+        }
+
+        .score-circle.average {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+        }
+
+        .score-circle.poor {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .score-label {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            padding: 20px;
+            border-radius: 12px;
+            background: #f5f5f5;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #666;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .score-circle {
+                width: 150px;
+                height: 150px;
+                font-size: 36px;
+            }
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 60px 30px;
+        }
+
+        .start-screen h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .quiz-info {
+            background: #f0fffe;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .quiz-info-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .quiz-info-item strong {
+            color: #5fa8a5;
+            margin-right: 10px;
+            min-width: 120px;
+        }
+
+        .icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎲 Binomial & Poisson Quiz</h1>
+            <p>Chapter 5: Binomial Distribution & Poisson Distribution</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
+        <div id="startScreen" class="start-screen">
+            <h2>Welcome to the Distributions Quiz!</h2>
+            <div class="quiz-info">
+                <div class="quiz-info-item">
+                    <span class="icon">📝</span>
+                    <strong>Total Questions:</strong> 50 Multiple Choice Questions
+                </div>
+                <div class="quiz-info-item">
+                    <span class="icon">⏱️</span>
+                    <strong>Time Limit:</strong> No time limit - Take your time!
+                </div>
+                <div class="quiz-info-item">
+                    <span class="icon">✅</span>
+                    <strong>Passing Score:</strong> 60% and above
+                </div>
+                <div class="quiz-info-item">
+                    <span class="icon">💡</span>
+                    <strong>Feedback:</strong> Instant feedback on each answer
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()" style="padding: 15px 40px; font-size: 18px;">
+                Start Quiz
+            </button>
+        </div>
+
+        <div id="quizContent" class="quiz-content" style="display: none;">
+            <div class="question-card" id="questionCard"></div>
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>
+                    ← Previous
+                </button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+                    Next →
+                </button>
+            </div>
+        </div>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "If 'p', 'q' and 'n' are probability of success, failure and number of trials respectively in a Binomial Distribution, what is its Standard Deviation?",
+                options: ["√np", "√pq", "(np)²", "√npq"],
+                correct: 3
+            },
+            {
+                q: "If 'm' is the mean of a Poisson Distribution, then variance is given by ___________.",
+                options: ["m²", "√m", "m", "m²"],
+                correct: 2
+            },
+            {
+                q: "If 'λ' is the mean of Poisson Distribution, the P(0) is given by ___________.",
+                options: ["e⁻λ", "eλ", "e", "λ⁻e"],
+                correct: 0
+            },
+            {
+                q: "For a Poisson Distribution, if mean = 1, then P(1) is?",
+                options: ["1/e", "e", "e²", "Indeterminate form"],
+                correct: 0
+            },
+            {
+                q: "Consider a random variable to which a Poisson distribution is best fitted. It happens that P(X = 1) = (2/3)P(X = 2) on this distribution plot. The variance of this distribution will be _________",
+                options: ["3", "1", "2", "2/3"],
+                correct: 0
+            },
+            {
+                q: "If X is a poisson random variate with mean 3, then P(|X − 3| < 1) will be _____.",
+                options: ["(9/2)e⁻³", "3e⁻³", "e⁻³", "(99/8)e⁻³"],
+                correct: 0
+            },
+            {
+                q: "A lot has 10% defective items. Ten items are chosen randomly from this lot. The probability that exactly 2 of the chosen items are defective is",
+                options: ["0.0036", "0.1937", "0.2234", "0.3874"],
+                correct: 1
+            },
+            {
+                q: "In a binomial distribution the mean is 15 and variance is 10, then parameter n is",
+                options: ["28", "16", "45", "25"],
+                correct: 2
+            },
+            {
+                q: "Consider an unbiased cubic dice with opposite faces colored identically and each face-colored red, blue or green such that each color appears only two times on the dice. If the dice thrown thrice, the probability of getting red color on top face of the dice at least twice is ______.",
+                options: ["7/27", "10/127", "19/27", "1/3"],
+                correct: 0
+            },
+            {
+                q: "The number of tosses of a coin that are needed so that the probability of getting at least one head being 0.875 is ______.",
+                options: ["2", "3", "4", "5"],
+                correct: 1
+            },
+            {
+                q: "If 20% of the bolts produced by a machine are defective, the probability that out of 4 bolts chosen, at most 2 bolts will be defective is,",
+                options: ["0.9728", "0.2897", "0.4096", "0.1536"],
+                correct: 0
+            },
+            {
+                q: "A fair coin is tossed independently four times. The probability of the event 'the number of times heads show up is more than the number of times tails show up'",
+                options: ["5/16", "1/4", "1/16", "7/16"],
+                correct: 0
+            },
+            {
+                q: "A fair coin is tossed 6 times. The probability of obtaining at least 5 heads is,",
+                options: ["0.1094", "0.4019", "0", "0.9410"],
+                correct: 0
+            },
+            {
+                q: "A dice is thrown 6 times. If getting an odd number is a success, the probability of 5 successes is,",
+                options: ["3/32", "1/32", "63/64", "7/64"],
+                correct: 0
+            },
+            {
+                q: "A dice is thrown 6 times. If getting an odd number is a success, the probability of at least 5 successes is,",
+                options: ["3/32", "1/32", "7/64", "63/64"],
+                correct: 2
+            },
+            {
+                q: "A dice is thrown 6 times. If getting an odd number is a success, the probability of at the most 5 successes is,",
+                options: ["3/32", "1/32", "7/64", "63/64"],
+                correct: 3
+            },
+            {
+                q: "If the probability of a defective bolt is 0.1. What will be the mean of the distribution of defective bolts in a total of 400?",
+                options: ["50", "60", "40", "70"],
+                correct: 2
+            },
+            {
+                q: "Find the expectation for how many bacteria there are per field if there are 2350 bacteria are randomly distributed over 340 fields (all having the same size) next to each other.",
+                options: ["4.98", "3.875", "6.91", "7.37"],
+                correct: 2
+            },
+            {
+                q: "A student arrives late for a class 40% of the time. Class meets five times each week. The probability if student being late for at least three classes in a given week is,",
+                options: ["0.317", "0", "0.5", "0.517"],
+                correct: 0
+            },
+            {
+                q: "A student arrives late for a class 40% of the time. Class meets five times each week. The probability of student will not be late at all during a given week is,",
+                options: ["0", "0.0778", "0.0887", "0.0227"],
+                correct: 1
+            },
+            {
+                q: "The mean and variance of a binomial variate are 8 and 6 then parameter n is",
+                options: ["22", "28", "32", "35"],
+                correct: 2
+            },
+            {
+                q: "In a company, there are 250 workers. The probability of a worker remain absent on any day is 0.02. The probability that on a day seven workers are absent is,",
+                options: ["0.104", "0", "0.905", "0.401"],
+                correct: 0
+            },
+            {
+                q: "In the inspection of tin plate produced by a continuous electrolytic process, 0.2 imperfections spotted per minute, on average. The probability of spotting one imperfection in 3 minutes is,",
+                options: ["0.329", "0", "0.923", "0.239"],
+                correct: 0
+            },
+            {
+                q: "In the inspection of tin plate produced by a continuous electrolytic process, 0.2 imperfections spotted per minute, on average. The probability of spotting at least two imperfections in 5 minutes is,",
+                options: ["0.4426", "0", "0.2644", "0.3678"],
+                correct: 2
+            },
+            {
+                q: "In the inspection of tin plate produced by a continuous electrolytic process, 0.2 imperfections spotted per minute, on average. The probability of spotting at most one imperfection in 15 minutes is,",
+                options: ["0.199", "0", "0.2644", "0.3678"],
+                correct: 0
+            },
+            {
+                q: "The number of defects in a thin copper wire follows Poisson distribution with mean 2.3 defects per millimeter. Then the probability of exactly two defects per millimeter of wire is,",
+                options: ["0", "0.23", "0.2652", "0.5226"],
+                correct: 2
+            },
+            {
+                q: "If P(1) = P(5) in Poisson distribution, then the value of mean is,",
+                options: ["3.31", "3.38", "5.38", "6.38"],
+                correct: 0
+            },
+            {
+                q: "In an experiment, positive and negative values are equally likely to occur. The probability of obtaining at most one negative value in five trials is _____.",
+                options: ["1/32", "6/32", "5/32", "7/32"],
+                correct: 1
+            },
+            {
+                q: "If '16' is the mean of a Poisson Distribution, then variance is given by ___________",
+                options: ["2", "4", "12", "16"],
+                correct: 3
+            },
+            {
+                q: "A student takes an 18-question multiple choice exam, with four choice per question. Suppose one of the choices in obviously incorrect, and the student makes an 'educated' guess of the remaining choices, then the expected number of the correct answer is",
+                options: ["9", "10", "8", "6"],
+                correct: 3
+            },
+            {
+                q: "The overall percentage of failure in an examination is 30. What is the probability that in a group of 5 students at least 4 passed the examination?",
+                options: ["0.3216", "0.4658", "0.5282", "0.5916"],
+                correct: 2
+            }
+          
+        ]
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = new Array(questions.length).fill(null);
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizContent').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            const card = document.getElementById('questionCard');
+            
+            const optionLabels = ['A', 'B', 'C', 'D'];
+            
+            card.innerHTML = `
+                <div class="question-header">
+                    <span class="question-number">Question ${currentQuestion + 1} of ${questions.length}</span>
+                </div>
+                <div class="question-text">${q.q}</div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option ${answers[currentQuestion] === i ? 'selected' : ''} ${answers[currentQuestion] !== null ? 'disabled' : ''}" 
+                             onclick="selectAnswer(${i})">
+                            <span class="option-label">${optionLabels[i]}</span>
+                            <span>${opt}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="feedback" id="feedback"></div>
+            `;
+
+            updateNavigation();
+            updateProgress();
+        }
+
+        function selectAnswer(selected) {
+            if (answers[currentQuestion] !== null) return;
+
+            answers[currentQuestion] = selected;
+            const q = questions[currentQuestion];
+            const isCorrect = selected === q.correct;
+            
+            if (isCorrect) {
+                score++;
+            }
+
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                opt.classList.add('disabled');
+                if (i === q.correct) {
+                    opt.classList.add('correct');
+                } else if (i === selected && !isCorrect) {
+                    opt.classList.add('incorrect');
+                }
+            });
+
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+            feedback.innerHTML = isCorrect 
+                ? '✓ Correct! Well done!' 
+                : `✗ Incorrect. The correct answer is: ${q.options[q.correct]}`;
+
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentQuestion === 0;
+
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.textContent = answers[currentQuestion] !== null ? 'Finish Quiz' : 'Finish Quiz';
+                nextBtn.disabled = answers[currentQuestion] === null;
+            } else {
+                nextBtn.textContent = 'Next →';
+                nextBtn.disabled = answers[currentQuestion] === null;
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizContent').style.display = 'none';
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.className = 'results show';
+
+            const percentage = (score / questions.length * 100).toFixed(1);
+            const incorrect = questions.length - score;
+            
+            let grade, message, circleClass;
+            
+            if (percentage >= 90) {
+                grade = 'Excellent!';
+                message = '🎉 Outstanding performance! You have an excellent understanding of binomial and poisson distributions!';
+                circleClass = 'excellent';
+            } else if (percentage >= 75) {
+                grade = 'Very Good!';
+                message = '👏 Great job! You have a strong grasp of the concepts!';
+                circleClass = 'good';
+            } else if (percentage >= 60) {
+                grade = 'Good!';
+                message = '👍 Well done! You passed, but there\'s room for improvement. Review the topics you missed.';
+                circleClass = 'good';
+            } else if (percentage >= 40) {
+                grade = 'Fair';
+                message = '📚 You need more practice. Review the material and try again to improve your score.';
+                circleClass = 'average';
+            } else {
+                grade = 'Needs Improvement';
+                message = '📖 Don\'t worry! Review the chapter thoroughly and practice more. You\'ll do better next time!';
+                circleClass = 'poor';
+            }
+
+            resultsDiv.innerHTML = `
+                <h2>Quiz Complete!</h2>
+                <div class="score-circle ${circleClass}">
+                    <div>
+                        ${percentage}%
+                        <div class="score-label">${grade}</div>
+                    </div>
+                </div>
+                <div class="stats">
+                    <div class="stat-box">
+                        <div class="stat-value">${score}</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${incorrect}</div>
+                        <div class="stat-label">Incorrect</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${questions.length}</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                </div>
+                <div class="message">${message}</div>
+                <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 20px; padding: 15px 40px; font-size: 18px;">
+                    Try Again
+                </button>
+            `;
+        }
+    </script>
+</body>
+</html>
